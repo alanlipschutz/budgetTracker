@@ -8,7 +8,7 @@ type ExpenseFormProps = {
 };
 export default function AddExpenseForm({ closeModal }: ExpenseFormProps) {
   const [name, setName] = useState<string>('');
-  const [cost, setCost] = useState<number>(0);
+  const [cost, setCost] = useState<string>('');
 
   const budgetContext = useContext(AppContext);
 
@@ -17,7 +17,7 @@ export default function AddExpenseForm({ closeModal }: ExpenseFormProps) {
     const newExpense: Expense = {
       id: uuid(),
       name: name,
-      cost: cost,
+      cost: +cost,
     };
     budgetContext?.addExpense(newExpense);
     closeModal(false);
@@ -54,9 +54,8 @@ export default function AddExpenseForm({ closeModal }: ExpenseFormProps) {
             className='appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
             id='grid-cost'
             type='number'
-            placeholder='0'
             value={cost}
-            onChange={(event) => setCost(+event.target.value)}
+            onChange={(event) => setCost(event.target.value)}
           />
         </div>
       </div>
