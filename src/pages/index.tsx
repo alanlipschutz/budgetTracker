@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google';
 import Budgets from './components/Budgets';
 import Remaining from './components/Remaining';
 import SpentSoFar from './components/SpentSoFar';
+import ExpenseList from './components/ExpenseList';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,6 +22,10 @@ export default function Home() {
         <div className=''>
           <SpentSoFar />
         </div>
+      </div>
+      <h3 className='mt-3'>Expenses</h3>
+      <div className='mt-3'>
+        <ExpenseList />
       </div>
     </main>
   );
