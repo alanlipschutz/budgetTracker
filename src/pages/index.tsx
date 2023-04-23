@@ -35,13 +35,11 @@ export default function Home() {
     <AppProvider>
       <main className=' '>
         <header className='flex justify-end pr-3 pt-3'>
-          <Tooltip title='Add expense'>
-            <FaPlus
-              onClick={() => handleModal(open)}
-              size={'2rem'}
-              className=''
-            ></FaPlus>
-          </Tooltip>
+          <FaPlus
+            onClick={() => handleModal(open)}
+            size={'2rem'}
+            className=''
+          ></FaPlus>
         </header>
         <h1 className='text-4xl font-bold text-gray-900 text-center mt-10'>
           My Budget Planner

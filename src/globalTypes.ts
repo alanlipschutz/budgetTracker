@@ -5,7 +5,7 @@ export type Expense = {
 };
 
 export interface BudgetState {
-  budget: number;
+  budgetState: number;
   remaining: number;
   spent: number;
   expenses: Expense[];

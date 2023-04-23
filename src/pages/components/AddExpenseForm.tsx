@@ -1,7 +1,7 @@
 import { AppContext } from '@/context/AppContext';
 import { Expense } from '@/globalTypes';
 import React, { useState, useContext } from 'react';
-import { uuid } from 'uuidv4';
+import { v4 } from 'uuid';
 
 type ExpenseFormProps = {
   closeModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,7 +15,7 @@ export default function AddExpenseForm({ closeModal }: ExpenseFormProps) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newExpense: Expense = {
-      id: uuid(),
+      id: v4(),
       name: name,
       cost: +cost,
     };

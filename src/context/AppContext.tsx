@@ -1,5 +1,10 @@
 import { BudgetState, Expense } from '@/globalTypes';
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
+import {
+  addExpenseToBudget,
+  getCurrentBudget,
+  removeExpenseOfBudget,
+} from '@/services/api';
 
 interface ContextValue extends BudgetState {
   addExpense: (expense: Expense) => void;
@@ -12,47 +17,53 @@ type AppProviderProps = {
   children: React.ReactNode;
 };
 export const AppProvider = (props: AppProviderProps) => {
-  const initialState = {
-    budget: 3000,
+  const [appState, setAppState] = useState<BudgetState>({
+    budgetState: 3000,
     remaining: 3000,
     spent: 0,
-    expenses: [
-      { id: '12', name: 'shopping', cost: 40 },
-      { id: '13', name: 'holiday', cost: 400 },
-      { id: '14', name: 'car service', cost: 50 },
-    ],
-  };
-  const [appState, setAppState] = useState<BudgetState>(initialState);
+    expenses: [],
+  });
+
+  useEffect(() => {
+    async function getBudget() {
+      try {
+        const budgetData = await getCurrentBudget();
+        setAppState(budgetData);
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    }
+
+    getBudget();
+  }, []);
 
   function spentUntilnow(expenses: Expense[]) {
     return expenses.reduce((total, item) => (total += item.cost), 0);
   }
 
-  function addExpense(expense: Expense) {
-    const newState = { ...appState };
-    newState.expenses.push(expense);
-    const spent = spentUntilnow(newState.expenses);
-    newState.spent = spent;
-    newState.remaining = newState.budget - spent;
-    setAppState(newState);
+  async function addExpense(expense: Expense) {
+    try {
+      const { newBudget } = await addExpenseToBudget(expense);
+      console.log(newBudget);
+      setAppState(newBudget);
+    } catch (error: any) {
+      console.log(error.message);
+    }
   }
 
-  function removeExpense(id: string) {
-    const newState = { ...appState };
-    const filteredArray = newState.expenses.filter(
-      (expense) => expense.id !== id
-    );
-    newState.expenses = filteredArray;
-    const spent = spentUntilnow(newState.expenses);
-    newState.spent = spent;
-    newState.remaining = newState.budget - spent;
-    setAppState(newState);
+  async function removeExpense(id: string) {
+    try {
+      const { newBudget } = await removeExpenseOfBudget(id);
+      setAppState(newBudget);
+    } catch (error: any) {
+      error.message;
+    }
   }
 
   return (
     <AppContext.Provider
       value={{
-        budget: appState.budget,
+        budgetState: appState.budgetState,
         expenses: appState.expenses,
         spent: appState.spent,
         remaining: appState.remaining,
