@@ -6,9 +6,11 @@ import ExpenseList from './components/ExpenseList';
 import AddExpenseForm from './components/AddExpenseForm';
 import Modal from '@mui/material/Modal';
 import { Box, Tooltip } from '@mui/material';
-import { useState } from 'react';
-import { FaPlus } from 'react-icons/fa';
-import { AppProvider } from '@/context/AppContext';
+import { useContext, useState } from 'react';
+import { FaPlus, FaDollarSign } from 'react-icons/fa';
+
+import { AppContext, AppProvider } from '@/context/AppContext';
+import AddBudgetForm from './components/AddBudgetForm';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -26,9 +28,14 @@ const style = {
 
 export default function Home() {
   const [open, setOpen] = useState<boolean>(false);
+  const [addBudget, setAddBudget] = useState<boolean>(false);
 
   const handleModal = (state: boolean) => {
     state ? setOpen(false) : setOpen(true);
+  };
+
+  const handleModalBudget = (state: boolean) => {
+    state ? setAddBudget(false) : setAddBudget(true);
   };
 
   return (
@@ -45,7 +52,10 @@ export default function Home() {
           My Budget Planner
         </h1>
         <div className='flex justify-center mt-10 flex-wrap gap-4'>
-          <div className=''>
+          <div
+            className='cursor-pointer'
+            onClick={() => handleModalBudget(addBudget)}
+          >
             <Budgets />
           </div>
           <div className=''>
@@ -67,6 +77,16 @@ export default function Home() {
         >
           <Box sx={style}>
             <AddExpenseForm closeModal={setOpen} />
+          </Box>
+        </Modal>
+        <Modal
+          open={addBudget}
+          onClose={handleModalBudget}
+          aria-labelledby='modal-modal-setBudget'
+          aria-describedby='modal-modal-setBudget'
+        >
+          <Box sx={style}>
+            <AddBudgetForm closeModal={setAddBudget} />
           </Box>
         </Modal>
       </main>

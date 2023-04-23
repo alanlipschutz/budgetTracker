@@ -1,4 +1,4 @@
-import { BudgetState, Expense } from '@/globalTypes';
+import { BudgetState, Expense, addBudget } from '@/globalTypes';
 import axios from 'axios';
 
 const API = 'http://localhost:8080';
@@ -6,6 +6,11 @@ const API = 'http://localhost:8080';
 const apiRoute = axios.create({
   baseURL: API,
 });
+
+async function addBudgetToAccount(budget: addBudget) {
+  const { data } = await apiRoute.post('/budget', budget);
+  return data;
+}
 
 async function getCurrentBudget() {
   const { data } = await apiRoute.get<BudgetState>('/');
@@ -22,4 +27,9 @@ async function removeExpenseOfBudget(id: string) {
   return data;
 }
 
-export { getCurrentBudget, addExpenseToBudget, removeExpenseOfBudget };
+export {
+  getCurrentBudget,
+  addExpenseToBudget,
+  removeExpenseOfBudget,
+  addBudgetToAccount,
+};

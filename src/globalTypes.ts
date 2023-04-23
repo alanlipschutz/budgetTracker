@@ -10,3 +10,7 @@ export interface BudgetState {
   spent: number;
   expenses: Expense[];
 }
+
+export interface addBudget {
+  budget: number;
+}

@@ -1,6 +1,7 @@
-import { BudgetState, Expense } from '@/globalTypes';
+import { BudgetState, Expense, addBudget } from '@/globalTypes';
 import { createContext, useState, useEffect } from 'react';
 import {
+  addBudgetToAccount,
   addExpenseToBudget,
   getCurrentBudget,
   removeExpenseOfBudget,
@@ -9,6 +10,7 @@ import {
 interface ContextValue extends BudgetState {
   addExpense: (expense: Expense) => void;
   removeExpense: (id: string) => void;
+  addBudget: (budget: addBudget) => void;
 }
 
 export const AppContext = createContext<ContextValue | null>(null);
@@ -24,6 +26,15 @@ export const AppProvider = (props: AppProviderProps) => {
     expenses: [],
   });
 
+  async function addBudget(budget: addBudget) {
+    try {
+      const { newBalance } = await addBudgetToAccount(budget);
+      setAppState(newBalance);
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  }
+
   useEffect(() => {
     async function getBudget() {
       try {
@@ -36,10 +47,6 @@ export const AppProvider = (props: AppProviderProps) => {
 
     getBudget();
   }, []);
-
-  function spentUntilnow(expenses: Expense[]) {
-    return expenses.reduce((total, item) => (total += item.cost), 0);
-  }
 
   async function addExpense(expense: Expense) {
     try {
@@ -69,6 +76,7 @@ export const AppProvider = (props: AppProviderProps) => {
         remaining: appState.remaining,
         addExpense: addExpense,
         removeExpense: removeExpense,
+        addBudget: addBudget,
       }}
     >
       {props.children}
