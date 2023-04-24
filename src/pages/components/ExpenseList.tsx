@@ -7,7 +7,7 @@ export default function ExpenseList() {
 
   return (
     <ul className='max-w-screen-md mt-0 mx-auto'>
-      {budgetContext?.expenses.map((expense) => (
+      {budgetContext?.budget.expenses.map((expense) => (
         <ExpenseItem
           key={expense.id}
           id={expense.id}

@@ -33,7 +33,7 @@ export default function AddBudgetForm({ closeModal }: BudgetFormProps) {
             className='appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white'
             id='grid-name'
             type='text'
-            placeholder='supermarket'
+            placeholder='$3000'
             value={budget}
             onChange={(event) => setBudget(event.target.value)}
           />

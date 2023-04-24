@@ -4,19 +4,35 @@ import {
   addBudgetToAccount,
   addExpenseToBudget,
   getCurrentBudget,
+  getMyBudget,
   removeExpenseOfBudget,
 } from '@/services/api';
 
-interface ContextValue extends BudgetState {
+interface ContextValue {
+  budget: BudgetState;
   addExpense: (expense: Expense) => void;
   removeExpense: (id: string) => void;
   addBudget: (budget: addBudget) => void;
+}
+
+export async function getStaticProps() {
+  try {
+    const budget = await getMyBudget();
+    return {
+      props: {
+        budget,
+      },
+    };
+  } catch (error: any) {
+    console.log(error.message);
+  }
 }
 
 export const AppContext = createContext<ContextValue | null>(null);
 
 type AppProviderProps = {
   children: React.ReactNode;
+  budget: BudgetState;
 };
 export const AppProvider = (props: AppProviderProps) => {
   const [appState, setAppState] = useState<BudgetState>({
@@ -24,6 +40,7 @@ export const AppProvider = (props: AppProviderProps) => {
     remaining: 3000,
     spent: 0,
     expenses: [],
+    id: '1',
   });
 
   async function addBudget(budget: addBudget) {
@@ -34,19 +51,6 @@ export const AppProvider = (props: AppProviderProps) => {
       console.log(error.message);
     }
   }
-
-  useEffect(() => {
-    async function getBudget() {
-      try {
-        const budgetData = await getCurrentBudget();
-        setAppState(budgetData);
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    }
-
-    getBudget();
-  }, []);
 
   async function addExpense(expense: Expense) {
     try {
@@ -70,10 +74,7 @@ export const AppProvider = (props: AppProviderProps) => {
   return (
     <AppContext.Provider
       value={{
-        budgetState: appState.budgetState,
-        expenses: appState.expenses,
-        spent: appState.spent,
-        remaining: appState.remaining,
+        budget: appState,
         addExpense: addExpense,
         removeExpense: removeExpense,
         addBudget: addBudget,
