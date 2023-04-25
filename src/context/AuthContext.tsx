@@ -80,7 +80,9 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
         };
         setAuthState(userState);
         addUserToLocalStorage(userState);
-        router.push('/budget');
+        if (userState.isLoggedIn === true) {
+          router.push('/budget');
+        }
       }
     } catch (error) {
       console.log(error);
@@ -99,7 +101,9 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
         };
         setAuthState(userState);
         addUserToLocalStorage(userState);
-        router.push('/budget');
+        if (userState.isLoggedIn === true) {
+          router.push('/budget');
+        }
       } else {
         console.log(response?.message);
         router.push('/');
@@ -107,6 +111,7 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
     } catch (error) {
       console.log(error);
     }
+    return false;
   };
 
   const handleLogout = async () => {

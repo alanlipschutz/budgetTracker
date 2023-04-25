@@ -10,6 +10,8 @@ import { FaPlus } from 'react-icons/fa';
 
 import { AppProvider } from '@/context/AppContext';
 import AddBudgetForm from '../components/AddBudgetForm';
+import { AiOutlineLogout } from 'react-icons/ai';
+import { useAuth } from '@/context/AuthContext';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -31,6 +33,8 @@ export default function Home() {
     state ? setOpen(false) : setOpen(true);
   };
 
+  const { logout } = useAuth();
+
   const handleModalBudget = (state: boolean) => {
     state ? setAddBudget(false) : setAddBudget(true);
   };
@@ -39,15 +43,22 @@ export default function Home() {
     <AppProvider>
       <main className=' '>
         <header className='flex justify-end pr-3 pt-3'>
+          <AiOutlineLogout
+            size={'2rem'}
+            onClick={logout}
+            className='cursor-pointer'
+          />
+        </header>
+        <div className='flex items-center gap-10 justify-center'>
+          <h1 className='text-4xl font-bold text-gray-900 text-center mt-10'>
+            My Budget Planner
+          </h1>
           <FaPlus
             onClick={() => handleModal(open)}
             size={'2rem'}
-            className=''
+            className='mt-10'
           ></FaPlus>
-        </header>
-        <h1 className='text-4xl font-bold text-gray-900 text-center mt-10'>
-          My Budget Planner
-        </h1>
+        </div>
         <div className='flex justify-center mt-10 flex-wrap gap-4'>
           <div
             className='cursor-pointer'

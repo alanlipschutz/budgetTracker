@@ -33,7 +33,6 @@ export const AppContext = createContext<ContextValue | null>(null);
 
 type AppProviderProps = {
   children: React.ReactNode;
-  budget: BudgetState;
 };
 export const AppProvider = (props: AppProviderProps) => {
   const [appState, setAppState] = useState<BudgetState>({
@@ -44,7 +43,7 @@ export const AppProvider = (props: AppProviderProps) => {
     id: '1',
   });
 
-  async function addBudget(budget: addBudget) {
+  async function createBudget(budget: addBudget) {
     try {
       const { newBalance } = await addBudgetToAccount(budget);
       setAppState(newBalance);
@@ -78,7 +77,7 @@ export const AppProvider = (props: AppProviderProps) => {
         budget: appState,
         addExpense: addExpense,
         removeExpense: removeExpense,
-        addBudget: addBudget,
+        addBudget: createBudget,
       }}
     >
       {props.children}
