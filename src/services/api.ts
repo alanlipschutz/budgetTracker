@@ -11,6 +11,7 @@ const API = 'http://localhost:8080';
 
 const apiRoute = axios.create({
   baseURL: API,
+  withCredentials: true,
 });
 
 async function addBudgetToAccount(budget: addBudget) {

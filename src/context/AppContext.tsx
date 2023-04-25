@@ -3,10 +3,11 @@ import { createContext, useState, useEffect } from 'react';
 import {
   addBudgetToAccount,
   addExpenseToBudget,
-  getCurrentBudget,
   getMyBudget,
   removeExpenseOfBudget,
 } from '@/services/api';
+import { useAuth } from './AuthContext';
+import { useRouter } from 'next/router';
 
 interface ContextValue {
   budget: BudgetState;

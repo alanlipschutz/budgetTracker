@@ -34,19 +34,32 @@ interface ChildrenProps {
 }
 
 export const useAuth = () => useContext(AuthContext);
-
+let localStorageUser: string | null;
+if (typeof window !== 'undefined') {
+  localStorageUser = localStorage.getItem('user');
+}
 export const AuthProvider = ({ children }: ChildrenProps) => {
-  const [authState, setAuthState] = useState<AuthState>({
-    isLoggedIn: false,
-    user: null,
-  });
+  const [authState, setAuthState] = useState<AuthState>(
+    localStorageUser
+      ? JSON.parse(localStorageUser)
+      : {
+          isLoggedIn: false,
+          user: null,
+        }
+  );
   const router = useRouter();
 
-  useEffect(() => {
-    if (authState.isLoggedIn === true) {
-      router.push('/budget');
+  function addUserToLocalStorage(user: AuthState) {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user', JSON.stringify(user));
     }
-  }, [authState, router]);
+  }
+
+  function removeUserFromLocalStorage() {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user');
+    }
+  }
 
   const handleSignUp = async (
     name: string,
@@ -61,23 +74,35 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
       );
       if (response && response.success) {
         const { name, email, token, id } = response.user!;
-        setAuthState({ isLoggedIn: true, user: { name, email, token, id } });
+        const userState = {
+          isLoggedIn: true,
+          user: { name, email, token, id },
+        };
+        setAuthState(userState);
+        addUserToLocalStorage(userState);
         router.push('/budget');
       }
     } catch (error) {
       console.log(error);
+      router.push('/');
     }
     return false;
   };
   const handleLogin = async (email: string, password: string) => {
     try {
       const response: LoginResponse | undefined = await login(email, password);
-      console.log(response);
       if (response && response.success === true) {
         const { name, email, token, id } = response.user!;
-        setAuthState({ isLoggedIn: true, user: { name, email, token, id } });
+        const userState = {
+          isLoggedIn: true,
+          user: { name, email, token, id },
+        };
+        setAuthState(userState);
+        addUserToLocalStorage(userState);
+        router.push('/budget');
       } else {
         console.log(response?.message);
+        router.push('/');
       }
     } catch (error) {
       console.log(error);
@@ -88,6 +113,7 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
     try {
       await logout();
       setAuthState({ isLoggedIn: false, user: null });
+      removeUserFromLocalStorage();
       router.push('/');
     } catch (error) {
       console.log(error);
