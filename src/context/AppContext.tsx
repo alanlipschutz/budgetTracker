@@ -6,6 +6,7 @@ import {
   getMyBudget,
   removeExpenseOfBudget,
 } from '@/services/api';
+import { useAuth } from './AuthContext';
 
 interface ContextValue {
   budget: BudgetState;
@@ -29,8 +30,7 @@ export async function getStaticProps() {
 
 export const AppContext = createContext<ContextValue | null>(null);
 
-
-export const useApp = () => useContext(AppContext)
+export const useApp = () => useContext(AppContext);
 type AppProviderProps = {
   children: React.ReactNode;
 };
@@ -42,7 +42,7 @@ export const AppProvider = (props: AppProviderProps) => {
     expenses: [],
     id: '1',
   });
-
+  const { authState } = useAuth();
   async function createBudget(budget: addBudget) {
     try {
       const { newBalance } = await addBudgetToAccount(budget);
@@ -76,9 +76,10 @@ export const AppProvider = (props: AppProviderProps) => {
       const budget = await getMyBudget();
       setAppState(budget);
     }
-
-    handleGetMyBudget();
-  }, []);
+    if (authState.user?.token) {
+      handleGetMyBudget();
+    }
+  }, [authState]);
 
   return (
     <AppContext.Provider

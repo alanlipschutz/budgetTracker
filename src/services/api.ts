@@ -71,7 +71,7 @@ const register = async (
       email,
       password,
     });
-    if (response.status === 200) {
+    if (response.status === 201) {
       return { success: true, user: response.data };
     }
   } catch (error: any) {

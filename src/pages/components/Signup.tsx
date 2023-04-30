@@ -7,7 +7,6 @@ interface IsignUp {
 }
 
 const SignUpForm = ({ isLogin }: IsignUp) => {
-  const router = useRouter();
   const { signUp, login } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
@@ -26,7 +25,6 @@ const SignUpForm = ({ isLogin }: IsignUp) => {
     } else {
       login(formData.email, formData.password);
     }
-    router.push('/budget');
   };
 
   return (
