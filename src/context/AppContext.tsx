@@ -120,6 +120,7 @@ export const AppProvider = (props: AppProviderProps) => {
     if (authState.user?.token) {
       handleGetMyBudget();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authState]);
 
   return (
