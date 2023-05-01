@@ -20,6 +20,7 @@ type AuthContextType = {
   login: (email: string, password: string) => void;
   logout: () => void;
   signUp: (name: string, email: string, password: string) => void;
+  error: any;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -27,6 +28,7 @@ const AuthContext = createContext<AuthContextType>({
   login: () => {},
   logout: () => {},
   signUp: () => {},
+  error: '',
 });
 
 interface ChildrenProps {
@@ -47,6 +49,7 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
           user: null,
         }
   );
+  const [error, setError] = useState<string>('');
   const router = useRouter();
 
   function addUserToLocalStorage(user: AuthState) {
@@ -59,6 +62,12 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('user');
     }
+  }
+
+  function clearError() {
+    setTimeout(() => {
+      setError('');
+    }, 3000);
   }
 
   const handleSignUp = async (
@@ -83,9 +92,16 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
         if (userState.isLoggedIn === true) {
           router.push('/budget');
         }
+      } else {
+        console.log(response?.message);
+        setError(JSON.stringify(response?.message));
+        clearError();
+        router.push('/');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      setError(error);
+      clearError();
       router.push('/');
     }
     return false;
@@ -106,10 +122,14 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
         }
       } else {
         console.log(response?.message);
+        setError(JSON.stringify(response?.message));
+        clearError();
         router.push('/');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      setError(error);
+      clearError();
     }
     return false;
   };
@@ -120,8 +140,10 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
       setAuthState({ isLoggedIn: false, user: null });
       removeUserFromLocalStorage();
       router.push('/');
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      setError(JSON.stringify(error?.message));
+      clearError();
     }
     return false;
   };
@@ -133,6 +155,7 @@ export const AuthProvider = ({ children }: ChildrenProps) => {
         login: handleLogin,
         logout: handleLogout,
         signUp: handleSignUp,
+        error: error,
       }}
     >
       {children}
