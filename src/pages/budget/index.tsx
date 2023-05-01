@@ -4,11 +4,11 @@ import SpentSoFar from '../components/SpentSoFar';
 import ExpenseList from '../components/ExpenseList';
 import AddExpenseForm from '../components/AddExpenseForm';
 import Modal from '@mui/material/Modal';
-import { Box } from '@mui/material';
-import { useState } from 'react';
+import { Alert, Box, Snackbar } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 
-import { AppProvider } from '@/context/AppContext';
+import { AppProvider, useApp } from '@/context/AppContext';
 import AddBudgetForm from '../components/AddBudgetForm';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { useAuth } from '@/context/AuthContext';
@@ -28,6 +28,17 @@ const style = {
 export default function Home() {
   const [open, setOpen] = useState<boolean>(false);
   const [addBudget, setAddBudget] = useState<boolean>(false);
+  const [openAlert, setOpenAlert] = useState<boolean>(false);
+
+  const { error } = useApp();
+
+  useEffect(() => {
+    if (error) {
+      setOpenAlert(true);
+    } else {
+      setOpenAlert(false);
+    }
+  }, [error]);
 
   const handleModal = (state: boolean) => {
     state ? setOpen(false) : setOpen(true);
@@ -42,6 +53,13 @@ export default function Home() {
   return (
     <AppProvider>
       <main className=' '>
+        {error ? (
+          <Snackbar open={openAlert}>
+            <Alert severity='error' sx={{ width: '100%' }}>
+              Something went wrong — <strong>{error}</strong>
+            </Alert>
+          </Snackbar>
+        ) : null}
         <header className='flex justify-end pr-3 pt-3'>
           <AiOutlineLogout
             size={'2rem'}

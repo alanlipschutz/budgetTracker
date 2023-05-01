@@ -13,6 +13,7 @@ interface ContextValue {
   addExpense: (expense: Expense) => void;
   removeExpense: (id: string) => void;
   addBudget: (budget: addBudget) => void;
+  error: any;
 }
 
 export async function getStaticProps() {
@@ -28,7 +29,13 @@ export async function getStaticProps() {
   }
 }
 
-export const AppContext = createContext<ContextValue | null>(null);
+export const AppContext = createContext<ContextValue>({
+  addBudget: () => {},
+  addExpense: () => {},
+  removeExpense: () => {},
+  budget: { budgetState: 0, expenses: [], id: '1', remaining: 0, spent: 0 },
+  error: '',
+});
 
 export const useApp = () => useContext(AppContext);
 type AppProviderProps = {
@@ -42,13 +49,26 @@ export const AppProvider = (props: AppProviderProps) => {
     expenses: [],
     id: '1',
   });
+  const [error, setError] = useState<string>('');
   const { authState } = useAuth();
+
+  function clearError() {
+    setTimeout(() => {
+      setError('');
+    }, 6000);
+  }
   async function createBudget(budget: addBudget) {
     try {
       const { newBalance } = await addBudgetToAccount(budget);
       setAppState(newBalance);
     } catch (error: any) {
-      console.log(error.message);
+      setError(
+        JSON.stringify(
+          `${error.response.status} - ${error.response.statusText}-${error.response.data.message}`
+        )
+      );
+      clearError();
+      console.log(error.response.data.message);
     }
   }
 
@@ -58,6 +78,12 @@ export const AppProvider = (props: AppProviderProps) => {
       console.log(newBudget);
       setAppState(newBudget);
     } catch (error: any) {
+      setError(
+        JSON.stringify(
+          `${error.response.status} - ${error.response.statusText}-${error.response.data.message}`
+        )
+      );
+      clearError();
       console.log(error.message);
     }
   }
@@ -67,15 +93,30 @@ export const AppProvider = (props: AppProviderProps) => {
       const { newBudget } = await removeExpenseOfBudget(id);
       setAppState(newBudget);
     } catch (error: any) {
-      error.message;
+      setError(
+        JSON.stringify(
+          `${error.response.status} - ${error.response.statusText}-${error.response.data.message}`
+        )
+      );
+      clearError();
+      console.log(error.message);
     }
   }
 
-  useEffect(() => {
-    async function handleGetMyBudget() {
+  async function handleGetMyBudget() {
+    try {
       const budget = await getMyBudget();
       setAppState(budget);
+    } catch (error: any) {
+      setError(
+        JSON.stringify(
+          `${error.response.status} - ${error.response.statusText}-${error.response.data.message}`
+        )
+      );
+      clearError();
     }
+  }
+  useEffect(() => {
     if (authState.user?.token) {
       handleGetMyBudget();
     }
@@ -88,6 +129,7 @@ export const AppProvider = (props: AppProviderProps) => {
         addExpense: addExpense,
         removeExpense: removeExpense,
         addBudget: createBudget,
+        error: error,
       }}
     >
       {props.children}
